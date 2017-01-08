@@ -8,7 +8,7 @@ import platform
 import subprocess
 
 # Define whether speeding up or slowing down (1 = default)
-slow_down = 2
+slow_down = 0.25
 # below 1 = fast
 # above 1 = slow
 if slow_down == 1:
@@ -59,38 +59,3 @@ os.chdir('resized')
 # Of course, you can use the command "parallel" with the imagemagick mogrify
 # parallel --progress gm mogrify -quality 100 -output-directory resized -resize 1920x1080! ::: *.JPG # Similar as before, remove the exclamation mark in order to keep the aspect ratio.
 
-# STEP 3
-print 'Step 3----------------------------------'
-# If you photos have noticeable flickering which is caused by slightly different exposure between taken photos, download the attached script, put it in the directory source_folder_of_pictures/renamed/resized/, make it executable and run it. The script will create a subdirectory "source_folder_of_pictures/renamed/resized/Deflickered" to store the processed photos.
-# You can get the latest version of the script at https://github.com/cyberang3l/timela...e-deflicker.pl
-
-# sudo apt-get install libfile-type-perl libterm-progressbar-perl
-# chmod +x timelapse-deflicker.pl
-# ./timelapse-deflicker.pl -h
-# ./timelapse-deflicker.pl -v
-# cd Deflickered
-
-# STEP 4
-print 'Step 4----------------------------------'
-os.system("ffmpeg -r 25 -pattern_type glob -i '*.JPG' -c:v copy output.avi")
- # Change -r 25 to define the frame rate. 25 here means 25 fps.
-
-# STEP 5 (skipping)
-print 'Step 5----------------------------------'
-
-# STEP 6 compress
-print 'Step 6----------------------------------'
-x =  "ffmpeg -i output.avi" + slow_down_clause + "-c:v libx264 -preset slow -crf 15 output-final.mkv"
-os.system(x)
-
-# Delete all the other files and move the final file to the input dir
-shutil.copyfile('output-final.mkv', input_dir + '/output-final.mkv')
-os.chdir(input_dir)
-shutil.rmtree('renamed/resized', ignore_errors=True)
-shutil.rmtree('renamed', ignore_errors=True)
-
-# Convert to mp4
-os.system("ffmpeg -i output-final.mkv -vcodec copy -acodec copy x.mp4")
-
-# FINAL open up in nautilus
-subprocess.Popen(["xdg-open", input_dir])
